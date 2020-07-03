@@ -7,11 +7,15 @@ module.exports = {
       const { day } = req.query;
 
       let results = await knex('appointments')
-        .where('cancealed_at', null);
+        .where('cancealed_at', null)
+        .join('clients', 'clients.id', '=', 'appointments.client_id')
+        .select('appointments.*', 'clients.name');
 
       if (day) {
         results = results.filter(appointment => format(appointment.date, 'yyyy-MM-dd') === day);
       }
+
+      res.header('Access-Control-Allow-Origin', '*');
 
       return res.json(results);
 
@@ -25,11 +29,10 @@ module.exports = {
         client_id,
         choosenDate,
         hour,
-        minutes,
         duration
       } = req.body;
 
-      const date = new Date(`${choosenDate} ${hour}:${minutes}`);
+      const date = new Date(`${choosenDate} ${hour}`);
 
       await knex('appointments').insert({
         date,
