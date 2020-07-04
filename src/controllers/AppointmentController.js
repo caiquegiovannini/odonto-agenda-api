@@ -15,8 +15,6 @@ module.exports = {
         results = results.filter(appointment => format(appointment.date, 'yyyy-MM-dd') === day);
       }
 
-      res.header('Access-Control-Allow-Origin', '*');
-
       return res.json(results);
 
     } catch (error) {
