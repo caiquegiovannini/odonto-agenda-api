@@ -22,6 +22,21 @@ module.exports = {
       console.error(error);
     }
   },
+  async show(req, res) {
+    try {
+      const { id } = req.params;
+
+      const appointment = await knex('appointments').where({ id });
+
+      if (appointment[0].cancealed_at) {
+        return res.status(404).send('Appointment not found.');
+      }
+
+      res.json(appointment);
+    } catch (error) {
+      console.error(error);
+    }
+  },
   async create(req, res) {
     try {
       const {
@@ -49,7 +64,7 @@ module.exports = {
   },
   async update(req, res) {
     try {
-      const { appointmentId } = req.params;
+      const { id } = req.params;
       const { choosenDate, hour, minutes, procedure_id, client_id, duration } = req.body;
 
       const date = new Date(`${choosenDate} ${hour}:${minutes}`);
@@ -61,7 +76,7 @@ module.exports = {
           client_id,
           duration
         })
-        .where({ id: appointmentId });
+        .where({ id });
 
       res.send();
     } catch (error) {
@@ -70,10 +85,10 @@ module.exports = {
   },
   async delete(req, res) {
     try {
-      const { appointmentId } = req.params;
+      const { id } = req.params;
 
       await knex('appointments')
-        .where({ id: appointmentId })
+        .where({ id })
         .update('cancealed_at', new Date());
 
         return res.send();
