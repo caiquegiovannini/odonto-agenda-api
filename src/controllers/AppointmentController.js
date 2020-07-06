@@ -8,8 +8,9 @@ module.exports = {
 
       let results = await knex('appointments')
         .where('cancealed_at', null)
+        .join('procedures', 'procedures.id', '=', 'appointments.procedure_id')
         .join('clients', 'clients.id', '=', 'appointments.client_id')
-        .select('appointments.*', 'clients.name');
+        .select('appointments.*', 'procedures.name AS procedure', 'clients.name AS client');
 
       if (day) {
         results = results.filter(appointment => format(appointment.date, 'yyyy-MM-dd') === day);
@@ -24,6 +25,7 @@ module.exports = {
   async create(req, res) {
     try {
       const {
+        procedure_id,
         client_id,
         choosenDate,
         hour,
@@ -34,6 +36,7 @@ module.exports = {
 
       await knex('appointments').insert({
         date,
+        procedure_id,
         client_id,
         duration
       });
@@ -47,13 +50,14 @@ module.exports = {
   async update(req, res) {
     try {
       const { appointmentId } = req.params;
-      const { choosenDate, hour, minutes, client_id, duration } = req.body;
+      const { choosenDate, hour, minutes, procedure_id, client_id, duration } = req.body;
 
       const date = new Date(`${choosenDate} ${hour}:${minutes}`);
 
       await knex('appointments')
         .update({
           date,
+          procedure_id,
           client_id,
           duration
         })
