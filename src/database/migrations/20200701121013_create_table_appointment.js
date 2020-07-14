@@ -12,6 +12,8 @@ exports.up = knex => knex.schema.createTable('appointments', table => {
   table.timestamp('date').notNullable();
   table.integer('duration').defaultTo(30);
 
+  table.text('comments');
+
   table.timestamp('cancealed_at');
   table.timestamps(true, true);
 });
