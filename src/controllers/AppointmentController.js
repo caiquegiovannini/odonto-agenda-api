@@ -17,15 +17,7 @@ module.exports = {
         results = results.filter(appointment => format(appointment.date, 'yyyy-MM-dd') === schedule);
       }
 
-      const appointments = results.map(appointment => ({
-        ...appointment,
-        appointmentDate: format(appointment.date, 'dd/MM/yyyy'),
-        appointmentSchedule: format(appointment.date, 'H:mm'),
-        created_at: format(appointment.created_at, 'dd/MM/yyyy'),
-        updated_at: format(appointment.updated_at, 'dd/MM/yyyy'),
-      }));
-
-      return res.json(appointments);
+      return res.json(results);
 
     } catch (error) {
       console.error(error);
@@ -54,15 +46,13 @@ module.exports = {
         updated_at,
       } = results[0];
 
-      const appointmentDate = format(date, 'dd/MM/yyyy');
-      const appointmentSchedule = format(date, 'H:mm')
-
       const appointment = {
         client,
         procedure,
-        appointmentDate,
-        appointmentSchedule,
-        duration: duration,
+        date,
+        duration,
+        created_at,
+        updated_at,
       }
 
       res.json(appointment);

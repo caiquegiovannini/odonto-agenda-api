@@ -3,7 +3,7 @@ const knex = require('../database');
 module.exports = {
   async index(req, res) {
     try {
-      let results = await knex('clients')
+      const results = await knex('clients')
         .where('deleted_at', null);
 
       return res.json(results);

@@ -2,10 +2,14 @@ const express = require('express');
 
 const routes = express.Router();
 
+const ProcedureController = require('./controllers/ProcedureController');
 const ClientController = require('./controllers/ClientController');
 const AppointmentController = require('./controllers/AppointmentController');
 
 routes.get('/', (req, res) => res.redirect('/appointments'));
+
+// Procedures
+routes.get('/procedures', ProcedureController.index);
 
 // Clients
 routes.get('/clients', ClientController.index);
