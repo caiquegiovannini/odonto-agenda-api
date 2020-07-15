@@ -67,21 +67,23 @@ module.exports = {
         client_id,
         choosenDate,
         hour,
-        duration
+        duration,
+        comments,
       } = req.body;
 
       const date = new Date(`${choosenDate} ${hour}`);
-      const alreadyScheduled = checkSchedule(choosenDate, hour);
+      const alreadyScheduled = await checkSchedule(choosenDate, hour);
 
-      if (alreadyScheduled) {
+      if (alreadyScheduled.length !== 0) {
         return res.send('This schedule is already in use');
       }
 
       await knex('appointments').insert({
-        date,
         procedure_id,
         client_id,
-        duration
+        date,
+        duration,
+        comments
       });
 
       return res.status(201).send();

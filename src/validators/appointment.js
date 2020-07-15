@@ -7,7 +7,7 @@ async function checkSchedule(choosenDate, hour) {
     format(appointment.date, 'yyyy-MM-dd') === choosenDate
   );
   
-  return appointmentsAtSameDay.filter(day => format(day.date, 'HH:mm') === hour).length;
+  return appointmentsAtSameDay.filter(each => format(each.date, 'HH:mm') === hour);
 }
 
 module.exports = {
