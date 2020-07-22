@@ -4,7 +4,8 @@ module.exports = {
   async index(req, res) {
     try {
       const results = await knex('clients')
-        .where('deleted_at', null);
+        .where('deleted_at', null)
+        .orderBy('name');
 
       return res.json(results);
 
@@ -16,11 +17,15 @@ module.exports = {
     try {
       const { id } = req.params;
 
-      const client = await knex('clients').where({ id });
+      const results = await knex('clients').where({ id });
 
-      if (client[0].deleted_at) {
+      if (results[0].deleted_at) {
         return res.status(404).send('Client not found');
       }
+
+      const { name } = results[0]
+
+      const client = { id, name };
 
       res.json(client);
     } catch (error) {

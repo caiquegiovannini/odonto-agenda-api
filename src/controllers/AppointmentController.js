@@ -11,7 +11,8 @@ module.exports = {
         .where('cancealed_at', null)
         .join('procedures', 'procedures.id', '=', 'appointments.procedure_id')
         .join('clients', 'clients.id', '=', 'appointments.client_id')
-        .select('appointments.*', 'procedures.name AS procedure', 'clients.name AS client');
+        .select('appointments.*', 'procedures.name AS procedure', 'clients.name AS client')
+        .orderBy('date');
 
       if (schedule) {
         results = results.filter(appointment => format(appointment.date, 'yyyy-MM-dd') === schedule);
@@ -28,29 +29,29 @@ module.exports = {
       const { id } = req.params;
 
       const results = await knex('appointments')
-        .where('appointments.id', id)
-        .join('procedures', 'procedures.id', '=', 'appointments.procedure_id')
-        .join('clients', 'clients.id', '=', 'appointments.client_id')
-        .select('appointments.*', 'procedures.name AS procedure', 'clients.name AS client');
+        .where('appointments.id', id);
 
       if (results[0].cancealed_at) {
         return res.status(404).send('Appointment not found.');
       }
 
       let {
-        client,
-        procedure,
+        client_id,
+        procedure_id,
         date,
         duration,
+        comments,
         created_at,
         updated_at,
       } = results[0];
 
       const appointment = {
-        client,
-        procedure,
+        id,
+        client_id,
+        procedure_id,
         date,
         duration,
+        comments,
         created_at,
         updated_at,
       }
@@ -95,21 +96,17 @@ module.exports = {
   async update(req, res) {
     try {
       const { id } = req.params;
-      const { choosenDate, hour, procedure_id, client_id, duration } = req.body;
+      const { choosenDate, hour, procedure_id, client_id, duration, comments } = req.body;
 
       const date = new Date(`${choosenDate} ${hour}`);
-      const alreadyScheduled = checkSchedule(choosenDate, hour);
-
-      if (alreadyScheduled) {
-        return res.send('This schedule is already in use');
-      }
 
       await knex('appointments')
         .update({
-          date,
           procedure_id,
           client_id,
-          duration
+          date,
+          duration,
+          comments
         })
         .where({ id });
 
